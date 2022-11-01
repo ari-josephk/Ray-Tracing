@@ -65,11 +65,23 @@ vector operator-(const vector &v1, const vector &v2) {
     return vector(v1.e[0] - v2.e[0], v1.e[1] - v2.e[1], v1.e[2] - v2.e[2]);
 }
 
+vector operator-(const vector &v1) {
+    return vector(-v1.e[0], -v1.e[1], -v1.e[2]);
+}
+
+vector operator*(const vector &v1, const vector &v2) {
+    return vector(v1.e[0] * v2.e[0], v1.e[1] * v2.e[1], v1.e[2] * v2.e[2]);
+}
+
 vector operator*(float t, const vector &v) {
     return vector(t*v.e[0], t*v.e[1], t*v.e[2]);
 }
 
-vector operator/(vector v, float t) {
+vector operator*(const vector &v, float t) {
+    return vector(t*v.e[0], t*v.e[1], t*v.e[2]);
+}
+
+vector operator/(const vector v, float t) {
     return vector(v.e[0]/t, v.e[1]/t, v.e[2]/t);
 }
 
@@ -77,4 +89,12 @@ float dot(const vector &v1, const vector &v2) {
     return v1.e[0] * v2.e[0]
          + v1.e[1] * v2.e[1]
          + v1.e[2] * v2.e[2];
+}
+
+vector cross(const vector &v1, const vector &v2){
+    return vector(
+        v1.e[1] * v2.e[2] - v1.e[2] * v2.e[1],
+        v1.e[2] * v2.e[0] - v1.e[0] * v2.e[2],
+        v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]
+    );
 }
