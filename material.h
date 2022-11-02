@@ -116,3 +116,17 @@ class dielectric : public material {
             return true;
         }
 };
+
+class light : public material {
+    public: 
+        float brightness;
+
+        light(float b){
+            brightness = b;
+        }
+
+        virtual bool scatter(const ray& r, const hit_record& rec, vector& attenuation, ray& scattered) const {
+            attenuation = (brightness - rec.t)/brightness * vector(1, 1, 1);
+            return false;
+        }
+};

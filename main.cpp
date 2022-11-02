@@ -14,7 +14,7 @@ using namespace std;
 
 //PARAMS
 const int NUM_SPHERES = 50;
-const int ANTIALIAS_SAMPLES = 25;
+const int ANTIALIAS_SAMPLES = 50;
 const float APERTURE = 0.05;
 const vector CAMERA_LOC = vector(10, 1, 4);
 const int MAX_REFLECTIONS = 20;
@@ -29,8 +29,8 @@ vector get_col(const ray& r, hitable *world, int reflections){
         if(reflections < MAX_REFLECTIONS && rec.mat_ptr->scatter(r, rec, attenuation, reflect)){
             return attenuation*get_col(reflect, world, reflections + 1);
         }
-        //prevent infinite bounces
-        else return vector(0,0,0);
+        //prevent infinite bounces, or reflect off a light
+        else return attenuation*vector(1,1,1);
     } else {
         //if ray hits nothing, background
         vector unit_dir = r.dir();
@@ -48,13 +48,13 @@ hitable *create_scene(int n) {
     vector col(float(rand())/RAND_MAX, float(rand())/RAND_MAX, float(rand())/RAND_MAX);
 
     list[1] = new sphere(vector(0, 1, 0), 1.0, new dielectric(1.5));
-    list[2] = new sphere(vector(-4, 1, 0), 1.0, new lamb(col));
-    list[3] = new sphere(vector(4, 1, 0), 1.0, new metal(vector(0.7, 0.6, 0.5), 0.0));
+    list[2] = new sphere(vector(4, 1, 0), 1.0, new light(100));
+    list[3] = new sphere(vector(-4, 1, 0), 1.0, new metal(vector(0.7, 0.6, 0.5), 0.0));
 
     int i = 4;
     
     for(int j = 0; j < n; j++){
-        vector center(14* float(rand())/RAND_MAX-7, 0.2, 8*float(rand())/RAND_MAX-4);
+        vector center(14* float(rand())/RAND_MAX-7, 0.2 + 0.2*float(rand())/RAND_MAX, 8*float(rand())/RAND_MAX-4);
         vector col(float(rand())/RAND_MAX, float(rand())/RAND_MAX, float(rand())/RAND_MAX);
         float radius = 0.6*float(rand())/RAND_MAX;
         float mat = float(rand())/RAND_MAX;
@@ -62,7 +62,8 @@ hitable *create_scene(int n) {
 
         if(abs(center[0]) < 5 && abs(center[2]) < 1) continue;
         if(mat < 0.7) list[i++] = new sphere(center, radius, new lamb(col));
-        else if(mat < 0.9) list[i++] = new sphere(center, radius, new metal(col, fuzz));
+        else if(mat < 0.85) list[i++] = new sphere(center, radius, new metal(col, fuzz));
+        else if(mat < 0.98) list[i++] = new sphere(center, radius, new light(50));
         else list[i++] = new sphere(center, radius, new dielectric(1.5));
         //printf("Added to list");
     }
